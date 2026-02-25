@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Registration Form</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="register.css">
+</head>
+<body>
+
+<div class="auth-container">
+<div class="form-box">
+
+<form id="registerForm" action="register.php" method="POST">
+
+<h2>Create Account</h2>
+<p class="subtitle">Join the Event Management System</p>
+
+<div class="input-group">
+<label>User ID (Unique)</label>
+<input type="text" name="userId" placeholder="e.g., STU001" required>
+</div>
+
+<div class="input-group">
+<label>Full Name</label>
+<input type="text" name="fullName" placeholder="Enter your name" required>
+</div>
+
+<div class="input-group">
+<label>Email</label>
+<input type="email" name="email" placeholder="Enter your email" required>
+</div>
+
+<div class="input-group">
+<label>Role</label>
+<select name="role" required>
+<option value="" disabled selected>Select your role</option>
+<option value="Super Admin">Super Admin</option>
+<option value="Dept Admin">Dept Admin</option>
+<option value="Event Organiser">Event Organiser</option>
+<option value="Student">Student</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>Password</label>
+<input type="password" name="password" required>
+</div>
+
+<div class="input-group">
+<label>Confirm Password</label>
+<input type="password" name="confirmPassword" required>
+</div>
+
+<button type="submit" class="btn">Register</button>
+
+</form>
+
+</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
