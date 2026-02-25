@@ -17,6 +17,6 @@ Smart Event Management System is a web-based application that helps users create
 4. Run project on localhost
 
 ## Team Members
-- Student 1
-- Student 2
-- Student 3
+- Devi Prasad Sabar
+- Suman Sahoo
+- Suprit Kumar Majhi
