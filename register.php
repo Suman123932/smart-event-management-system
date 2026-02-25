@@ -13,13 +13,20 @@ $password = $_POST['password'];
 
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-$sql = "INSERT INTO users (user_id, full_name, email, role, password)
-        VALUES ('$userId', '$fullName', '$email', '$role', '$hashedPassword')";
 
-if ($conn->query($sql) === TRUE) {
-    echo "<script>alert('Registration Successful!'); window.location='registration.html';</script>";
+$stmt = $conn->prepare("INSERT INTO users (full_name, email, password, role) VALUES (?, ?, ?, ?)");
+$stmt->bind_param("ssss", $full_name, $email, $hashedPassword, $role);
+
+if ($stmt->execute()) {
+    echo "<script>
+            alert('Registration Successful!');
+            window.location='login.html';
+          </script>";
 } else {
-    echo "Error: " . $conn->error;
+    echo "<script>
+            alert('Email already registered!');
+            window.location='registration.html';
+          </script>";
 }
 
 $conn->close();
