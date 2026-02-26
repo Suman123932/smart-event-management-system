@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 session_start();
-if (!isset($_SESSION['user']) || $_SESSION['role'] != "student") {
+if (!isset($_SESSION['user']) || $_SESSION['role'] != "super_admin") {
     header("Location: login.html");
     exit();
 }
@@ -11,7 +11,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] != "student") {
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Student Dashboard</title>
+        <title>Super Admin Dashboard</title>
 </head>
 <body>
     <h1>Welcome,<?php echo $_SESSION['user']; ?></h1>
