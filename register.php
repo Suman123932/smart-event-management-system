@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
+session_start();
 $conn = new mysqli("localhost", "root", "", "eventdb");
 
 if ($conn->connect_error) {
