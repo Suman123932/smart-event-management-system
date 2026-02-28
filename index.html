@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Event Management System</title>
+
+<style>
+/* ===== GLOBAL STYLES ===== */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body{
+    height:100vh;
+    background: linear-gradient(-45deg,#1e3c72,#2a5298,#6dd5ed,#2193b0);
+    background-size:400% 400%;
+    animation: gradientBG 10s ease infinite;
+    color:white;
+}
+
+@keyframes gradientBG{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+/* ===== NAVBAR ===== */
+nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 60px;
+    background:rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+}
+
+nav h1{
+    font-size:28px;
+    letter-spacing:2px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:30px;
+}
+
+nav ul li{
+    cursor:pointer;
+    transition:0.3s;
+}
+
+nav ul li:hover{
+    color:#ffd700;
+}
+
+.btn{
+    padding:10px 20px;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.login-btn{
+    background:#ffffff;
+    color:#2a5298;
+}
+
+.register-btn{
+    background:#ffd700;
+    color:black;
+}
+
+.btn:hover{
+    transform:scale(1.1);
+}
+
+/* ===== HERO SECTION ===== */
+.hero{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    height:70vh;
+    text-align:center;
+    padding:20px;
+}
+
+.hero h2{
+    font-size:48px;
+    margin-bottom:20px;
+}
+
+.hero p{
+    font-size:20px;
+    width:60%;
+    margin-bottom:30px;
+}
+
+/* ===== UPCOMING EVENTS ===== */
+.events{
+    padding:40px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(10px);
+}
+
+.events h3{
+    text-align:center;
+    margin-bottom:30px;
+    font-size:30px;
+}
+
+.event-container{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    flex-wrap:wrap;
+}
+
+.event-card{
+    background:rgba(0,0,0,0.5);
+    padding:20px;
+    border-radius:15px;
+    width:250px;
+    transition:0.4s;
+}
+
+.event-card:hover{
+    transform:translateY(-10px);
+    background:#ffd700;
+    color:black;
+}
+
+footer{
+    text-align:center;
+    padding:20px;
+    background:rgba(0,0,0,0.4);
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+    .hero h2{
+        font-size:32px;
+    }
+    .hero p{
+        width:90%;
+    }
+    nav{
+        flex-direction:column;
+        gap:15px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+    <h1>SmartEvent</h1>
+    <ul>
+        <li onclick="scrollToEvents()">Upcoming Events</li>
+        <li>About</li>
+        <li>Contact</li>
+    </ul>
+    <div>
+        <button class="btn login-btn" onclick="login()">Login</button>
+        <button class="btn register-btn" onclick="register()">Register</button>
+    </div>
+</nav>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+    <h2>Welcome to Smart Event Management System</h2>
+    <p>Organize, manage, and explore events effortlessly with our intelligent and modern event management platform.</p>
+    <button class="btn register-btn" onclick="register()">Get Started</button>
+</section>
+
+<!-- ===== UPCOMING EVENTS ===== -->
+<section class="events" id="events">
+    <h3>Upcoming Events</h3>
+    <div class="event-container">
+        <div class="event-card">
+            <h4>Tech Conference 2025</h4>
+            <p>Date: March 15, 2026</p>
+            <p>Location: City Hall</p>
+        </div>
+
+        <div class="event-card">
+            <h4>Music Fest</h4>
+            <p>Date: April 10, 2026</p>
+            <p>Location: Open Arena</p>
+        </div>
+
+        <div class="event-card">
+            <h4>Business Summit</h4>
+            <p>Date: May 5, 2026</p>
+            <p>Location: Grand Hotel</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    © 2026 Smart Event Management System | All Rights Reserved
+</footer>
+
+<script>
+
+/* ===== JAVASCRIPT FUNCTIONS ===== */
+
+function login(){
+    window.location.href = "login.html";
+}
+
+function register(){
+    window.location.href = "registration.html";
+}
+
+function scrollToEvents(){
+    document.getElementById("events").scrollIntoView({behavior:'smooth'});
+}
+
+</script>
+
+</body>
+</html>
