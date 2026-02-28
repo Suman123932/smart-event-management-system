@@ -1,23 +1,17 @@
 <?php
 session_start();
-$conn = new mysqli("localhost", "root", "", "eventdb");
+$conn = mysqli_connect("localhost","root","","event_db");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$email = $_SESSION['reset_email'];
+$otp = $_POST['otp'];
 
-    $email = $_SESSION['reset_email'];
-    $otp = $_POST['otp'];
+$result = mysqli_query($conn, "SELECT * FROM users 
+WHERE email='$email' AND otp='$otp' 
+AND otp_expire > NOW()");
 
-    $stmt = $conn->prepare("SELECT otp, otp_expiry FROM users WHERE email=?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->bind_result($db_otp, $db_expiry);
-    $stmt->fetch();
-
-    if ($otp == $db_otp && strtotime($db_expiry) > time()) {
-        header("Location: reset_password.html");
-        exit();
-    } else {
-        echo "Invalid or Expired OTP";
-    }
+if(mysqli_num_rows($result) > 0){
+    header("Location: reset_password.html");
+} else {
+    echo "Invalid or Expired OTP!";
 }
 ?>
