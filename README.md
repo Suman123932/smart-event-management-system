@@ -3,7 +3,7 @@
 ## Description
 Smart Event Management System is a web-based application that helps users create, manage, and organize events efficiently.
 
-## Technologies Used
+## Tools Used
 - HTML
 - CSS
 - JavaScript
