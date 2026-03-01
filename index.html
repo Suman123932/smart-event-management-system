@@ -49,13 +49,15 @@ nav ul{
     gap:30px;
 }
 
-nav ul li{
+nav ul li a{
+    color:white;
+	text_decoration:none;
     cursor:pointer;
     transition:0.3s;
 }
 
-nav ul li:hover{
-    color:#ffd700;
+nav ul li a:hover{
+    color:yellow;
 }
 
 .btn{
@@ -167,8 +169,9 @@ footer{
     <h1>SmartEvent</h1>
     <ul>
     <li onclick="scrollToEvents()">Upcoming Events</li>
-    <li><a href="aboutsection.html" >About</a></li>
-    <li><a href="contactsection.html" class="nav-link">Contact</a></li>
+    <li><a href="booking.html" >Book Event</a></li>
+    <li><a href="about.html" >About</a></li>
+    <li><a href="contact.html" >Contact</a></li>
 </ul>
     <div>
         <button class="btn login-btn" onclick="login()">Login</button>
