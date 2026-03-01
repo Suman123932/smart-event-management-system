@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Professional Event Creator</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("event-back.jpeg");
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 450px;
+            background: rgba(0,0,0,0.85);
+            padding: 30px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.6);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: gray;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            width: 25%;
+            background: yellow;
+            transition: 0.4s ease;
+        }
+
+        .step {
+            display: none;
+            animation: fade 0.4s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: none;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 10px 5px 0 0;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .next-btn {
+            background: yellow;
+        }
+
+        .prev-btn {
+            background: gray;
+            color: white;
+        }
+
+        .summary {
+            background: white;
+            color: black;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Create Event</h2>
+
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step active">
+        <input type="text" id="eventName" placeholder="Event Name">
+        <input type="text" id="description" placeholder="Description">
+        <button class="next-btn" onclick="nextStep()">Next</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step">
+        <input type="text" id="organizer" placeholder="Organizer Name">
+        <input type="email" id="email" placeholder="Email">
+        <button class="prev-btn" onclick="prevStep()">Back</button>
+        <button class="next-btn" onclick="nextStep()">Next</button>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step">
+        <input type="date" id="date">
+        <input type="time" id="time">
+        <button class="prev-btn" onclick="prevStep()">Back</button>
+        <button class="next-btn" onclick="nextStep()">Next</button>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step">
+        <input type="text" id="venue" placeholder="Venue">
+        <input type="text" id="city" placeholder="City">
+        <button class="prev-btn" onclick="prevStep()">Back</button>
+        <button class="next-btn" onclick="submitForm()">Submit</button>
+    </div>
+
+    <div id="result"></div>
+
+</div>
+
+<script>
+
+let currentStep = 0;
+let steps = document.querySelectorAll(".step");
+let progress = document.getElementById("progress");
+
+function showStep(index) {
+    steps.forEach(step => step.classList.remove("active"));
+    steps[index].classList.add("active");
+
+    progress.style.width = ((index + 1) / steps.length) * 100 + "%";
+}
+
+function validateStep() {
+    let inputs = steps[currentStep].querySelectorAll("input");
+    for (let input of inputs) {
+        if (input.value.trim() === "") {
+            alert("Please fill all fields before proceeding.");
+            return false;
+        }
+    }
+    return true;
+}
+
+function nextStep() {
+    if (!validateStep()) return;
+
+    if (currentStep < steps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+    }
+}
+
+function prevStep() {
+    if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+    }
+}
+
+function submitForm() {
+    if (!validateStep()) return;
+
+    let summary = `
+        <div class="summary">
+            <h3>Event Created Successfully 🎉</h3>
+            <p><strong>Name:</strong> ${eventName.value}</p>
+            <p><strong>Description:</strong> ${description.value}</p>
+            <p><strong>Organizer:</strong> ${organizer.value}</p>
+            <p><strong>Email:</strong> ${email.value}</p>
+            <p><strong>Date:</strong> ${date.value}</p>
+            <p><strong>Time:</strong> ${time.value}</p>
+            <p><strong>Venue:</strong> ${venue.value}, ${city.value}</p>
+        </div>
+    `;
+
+    document.getElementById("result").innerHTML = summary;
+}
+
+</script>
+
+</body>
+</html>
