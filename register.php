@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // 🔍 CHECK IF EMAIL EXISTS
-    $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $check = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
     $check->bind_param("s", $email);
     $check->execute();
     $check->store_result();

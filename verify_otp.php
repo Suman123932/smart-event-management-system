@@ -1,14 +1,17 @@
 <?php
 session_start();
-$conn = mysqli_connect("localhost","root","","event_db");
+date_default_timezone_set('Asia/Kolkata');
+echo "Session Email:".$_SESSION['reset_email'];
+//echo"<br> Entered OTP:".$_POST['otp'];
+$conn = mysqli_connect("localhost","root","","eventdb");
 
 $email = $_SESSION['reset_email'];
-$otp = $_POST['otp'];
+$otp = trim($_POST['otp']);
 
-$result = mysqli_query($conn, "SELECT * FROM users 
+$result = mysqli_query($conn, "SELECT otp FROM users 
 WHERE email='$email' AND otp='$otp' 
-AND otp_expire > NOW()");
-
+AND STR_TO_DATE(otp_expire,'%Y-%m-%d %H:%i:%s') > NOW()");
+//echo "<br>Database OTP:".$result['otp'];
 if(mysqli_num_rows($result) > 0){
     header("Location: reset_password.html");
 } else {

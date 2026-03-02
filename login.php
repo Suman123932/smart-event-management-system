@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 }
 
 session_start();
-$conn = new mysqli("localhost", "root", "", "eventdb");
+$conn = mysqli_connect("localhost","root","","eventdb");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }

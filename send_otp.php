@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Kolkata');
 $conn = mysqli_connect("localhost","root","","eventdb");
 
 $email = $_POST['email'];
@@ -9,7 +10,7 @@ $result = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
 if(mysqli_num_rows($result) > 0){
 
     $otp = rand(100000,999999);
-    $expire = date("Y-m-d H:i:s", strtotime("+5 minutes"));
+    $expire = date("Y-m-d H:i:s", time() + 300);
 
     mysqli_query($conn, "UPDATE users SET otp='$otp', otp_expire='$expire' WHERE email='$email'");
 
