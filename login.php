@@ -45,7 +45,7 @@ if ($result->num_rows == 1) {
 
     } else {
         echo "<script>
-                alert('Wrong email or password!');
+                alert('Invalid email id or password!');
                 window.location='login.html';
               </script>";
     }

@@ -2,15 +2,222 @@
 <html>
 <head>
     <title>Verify OTP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg,#141E30,#243B55);
+        }
+
+        .card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 20px;
+            width: 360px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {opacity:0; transform:translateY(30px);}
+            to {opacity:1; transform:translateY(0);}
+        }
+
+        h2 {
+            margin-bottom: 5px;
+        }
+
+        p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .otp-box {
+            display: flex;
+            justify-content: space-between;
+            margin: 25px 0;
+        }
+
+        .otp-box input {
+            width: 45px;
+            height: 55px;
+            font-size: 22px;
+            text-align: center;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: transparent;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .otp-box input:focus {
+            border-color: #00f2fe;
+            box-shadow: 0 0 10px #00f2fe;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(45deg,#00f2fe,#4facfe);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,242,254,0.4);
+        }
+
+        .timer {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .resend {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .resend a {
+            color: #00f2fe;
+            text-decoration: none;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .resend a.active {
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0% {transform: translateX(0);}
+            25% {transform: translateX(-5px);}
+            50% {transform: translateX(5px);}
+            75% {transform: translateX(-5px);}
+            100% {transform: translateX(0);}
+        }
+
+        .success {
+            color: #00ffae;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #ff4d4d;
+            margin-top: 10px;
+        }
+
+    </style>
 </head>
 <body>
 
-<h2>Enter OTP</h2>
+<div class="card">
+    <h2>Verify OTP</h2>
+    <p>Enter the 6-digit code sent to your email</p>
 
-<form action="verify_otp.php" method="POST">
-    <input type="text" name="otp" placeholder="Enter OTP" required>
-    <button type="submit">Verify</button>
-</form>
+    <form action="verify_otp.php" method="POST" id="otpForm">
+        <div class="otp-box">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+            <input type="text" maxlength="1">
+        </div>
+
+        <input type="hidden" name="otp" id="finalOtp">
+        <button type="submit">Verify OTP</button>
+    </form>
+
+    <div class="timer">
+        OTP expires in <span id="countdown">30</span> seconds
+    </div>
+
+    <div class="resend">
+        <a href="#" id="resendLink">Resend OTP</a>
+    </div>
+
+    <div id="message"></div>
+</div>
+
+<script>
+    const inputs = document.querySelectorAll(".otp-box input");
+    const finalOtp = document.getElementById("finalOtp");
+    const form = document.getElementById("otpForm");
+    const message = document.getElementById("message");
+
+    // Auto move focus
+    inputs.forEach((input, index) => {
+        input.addEventListener("keyup", (e) => {
+            if (input.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+
+            let otpValue = "";
+            inputs.forEach(i => otpValue += i.value);
+            finalOtp.value = otpValue;
+        });
+    });
+
+    // Countdown timer
+    let timeLeft = 30;
+    const countdown = document.getElementById("countdown");
+    const resendLink = document.getElementById("resendLink");
+
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdown.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            resendLink.classList.add("active");
+        }
+    }, 1000);
+
+    // Shake effect if empty
+    form.addEventListener("submit", function(e){
+        if(finalOtp.value.length < 6){
+            e.preventDefault();
+            document.querySelector(".card").classList.add("shake");
+            setTimeout(() => {
+                document.querySelector(".card").classList.remove("shake");
+            },300);
+        }
+    });
+    resendLink.addEventListener("click", function(e){
+    e.preventDefault();
+
+    fetch("send_otp.php", {
+        method: "POST"
+    })
+    .then(response => response.text())
+    .then(data => {
+        message.innerHTML = "<div class='success'>New OTP Sent Successfully!</div>";
+        timeLeft = 30;
+        resendLink.classList.remove("active");
+    });
+});
+
+</script>
 
 </body>
 </html>
