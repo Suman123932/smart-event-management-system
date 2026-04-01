@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Department Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
+
+body{
+display:flex;
+height:100vh;
+background:linear-gradient(270deg,#43cea2,#185a9d,#6dd5ed,#2193b0);
+background-size:800% 800%;
+animation:bg 15s ease infinite;
+color:white;
+}
+
+@keyframes bg{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+/* SIDEBAR */
+.sidebar{
+width:220px;
+background:rgba(0,0,0,0.4);
+padding:20px;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.sidebar h2{text-align:center;}
+
+.sidebar button{
+padding:12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+background:#00c9a7;
+color:white;
+}
+
+.sidebar button:hover{background:#00a389;}
+
+/* CONTENT */
+.content{
+flex:1;
+padding:20px;
+overflow:auto;
+}
+
+.section{display:none;}
+.active{display:block;}
+
+.card{
+background:rgba(255,255,255,0.15);
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+/* TABLE */
+table{width:100%;margin-top:10px;border-collapse:collapse;}
+th,td{padding:10px;text-align:center;}
+th{background:rgba(0,0,0,0.3);}
+td{background:rgba(255,255,255,0.15);}
+
+/* GALLERY */
+.gallery img{
+width:120px;
+margin:10px;
+border-radius:10px;
+}
+
+input,select{
+padding:10px;
+margin:5px;
+border:none;
+border-radius:6px;
+}
+
+button.action{
+background:#ff7a18;
+margin:3px;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+<h2>Dept Admin</h2>
+<button onclick="showSection('create')">Create Event</button>
+<button onclick="showSection('track')">Track Events</button>
+<button onclick="showSection('poster')">Poster Upload</button>
+<button onclick="showSection('analysis')">Analysis</button>
+<button onclick="logout()">Logout</button>
+</div>
+
+<!-- CONTENT -->
+
+<div class="content">
+
+<!-- CREATE EVENT -->
+
+<div id="create" class="section active">
+<div class="card">
+<h3>Create Event</h3>
+
+<input id="name" placeholder="Event Name">
+<input type="date" id="date">
+<input type="number" id="reg" placeholder="Registrations">
+
+<button onclick="createEvent()">Create</button>
+
+</div>
+</div>
+
+<!-- TRACK EVENTS -->
+
+<div id="track" class="section">
+<div class="card">
+<h3>Track Events</h3>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Date</th>
+<th>Registrations</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="eventTable"></tbody>
+</table>
+
+</div>
+</div>
+
+<!-- POSTER UPLOAD -->
+
+<div id="poster" class="section">
+<div class="card">
+<h3>Upload Event Poster</h3>
+<input type="file" onchange="uploadPoster(event)">
+<div id="posterGallery" class="gallery"></div>
+</div>
+</div>
+
+<!-- ANALYSIS -->
+
+<div id="analysis" class="section">
+<div class="card">
+<h3>Department Analysis</h3>
+<canvas id="chart"></canvas>
+</div>
+</div>
+
+</div>
+
+<script>
+
+let dept="Computer Science" // change per department login
+
+let events=JSON.parse(localStorage.getItem("events"))||[]
+let posters=JSON.parse(localStorage.getItem("posters"))||[]
+
+function showSection(id){
+document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
+document.getElementById(id).classList.add("active")
+load()
+}
+
+/* CREATE EVENT */
+function createEvent(){
+let name=document.getElementById("name").value
+let date=document.getElementById("date").value
+let reg=parseInt(document.getElementById("reg").value)
+
+events.push({
+name,
+date,
+reg,
+dept,
+status:"Pending"
+})
+
+save()
+load()
+}
+
+/* TRACK EVENTS */
+function load(){
+
+let table=""
+let labels=[]
+let data=[]
+
+events.filter(e=>e.dept===dept).forEach(e=>{
+table+=`
+<tr>
+<td>${e.name}</td>
+<td>${e.date}</td>
+<td>${e.reg}</td>
+<td>${e.status}</td>
+</tr>`
+
+labels.push(e.name)
+data.push(e.reg)
+})
+
+document.getElementById("eventTable").innerHTML=table
+
+drawChart(labels,data)
+
+/* POSTERS */
+let imgs=""
+posters.forEach(p=>{
+if(p.dept===dept){
+imgs+=`<img src="${p.img}">`
+}
+})
+document.getElementById("posterGallery").innerHTML=imgs
+
+}
+
+/* POSTER UPLOAD */
+function uploadPoster(e){
+let file=e.target.files[0]
+let reader=new FileReader()
+
+reader.onload=function(){
+posters.push({dept,img:reader.result})
+localStorage.setItem("posters",JSON.stringify(posters))
+load()
+}
+
+reader.readAsDataURL(file)
+}
+
+/* CHART */
+let chart
+function drawChart(labels,data){
+
+if(chart) chart.destroy()
+
+chart=new Chart(document.getElementById("chart"),{
+type:"bar",
+data:{
+labels:labels,
+datasets:[{
+label:"Registrations",
+data:data,
+backgroundColor:"#00f2fe"
+}]
+}
+})
+}
+
+/* SAVE */
+function save(){
+localStorage.setItem("events",JSON.stringify(events))
+}
+
+/* LOGOUT */
+function logout(){
+window.location.href="index.html";
+}
+
+load()
+
+</script>
+
+</body>
+</html>

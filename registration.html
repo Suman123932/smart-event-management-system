@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Registration Form</title>
+    <title>Register</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- KEEP YOUR ORIGINAL CSS -->
     <link rel="stylesheet" href="register.css">
 </head>
 <body>
@@ -17,48 +19,104 @@
 <p class="subtitle">Join the Event Management System</p>
 
 <div class="input-group">
-<label>User ID (Unique)</label>
-<input type="text" name="userId" placeholder="e.g., STU001" required>
+<label>User ID</label>
+<input type="text" name="userId" required>
 </div>
 
 <div class="input-group">
 <label>Full Name</label>
-<input type="text" name="full_name" placeholder="Enter your name" required>
+<input type="text" name="full_name" required>
 </div>
 
 <div class="input-group">
 <label>Email</label>
-<input type="email" name="email" placeholder="Enter your email" required>
+<input type="email" name="email" required>
 </div>
 
 <div class="input-group">
 <label>Role</label>
 <select name="role" required>
-<option value="" disabled selected>Select your role</option>
+<option value="" disabled selected>Select role</option>
 <option value="super_admin">Super Admin</option>
 <option value="dept_admin">Dept Admin</option>
 <option value="event_organizer">Event Organizer</option>
-<option value="Student">Student</option>
+<option value="Student">CR</option>
 </select>
 </div>
 
 <div class="input-group">
 <label>Password</label>
-<input type="password" name="password" required>
+<input type="password" id="password" name="password" required>
 </div>
 
 <div class="input-group">
 <label>Confirm Password</label>
-<input type="password" name="confirmPassword" required>
+<input type="password" id="confirmPassword" name="confirmPassword" required>
 </div>
 
 <button type="submit" class="btn">Register</button>
 
 </form>
-
 </div>
 </div>
 
-<script src="script.js"></script>
+<!-- ✅ SUCCESS POPUP -->
+<!--<div id="successPopup" class="popup">
+    <div class="popup-content">
+        <h2>Registration Successful 🎉</h2>
+        <p>Account created successfully</p>
+        
+    </div>
+</div>
+-->
+<!-- Popup -->
+<div id="popup">
+    <p>✅ Registration Successful!</p>
+    <button onclick="goToLogin()">Go to Login</button>
+</div>
+
+<script>
+    function showPopup() {
+        document.getElementById("popup").style.display = "block";
+    }
+
+    function goToLogin() {
+        window.location.href = "login.html";
+    }
+</script>
+<!-- ✅ SCRIPT -->
+<script>
+
+/* PASSWORD MATCH VALIDATION */
+document.getElementById("registerForm").addEventListener("submit", function(e) {
+    let pass = document.getElementById("password").value;
+    let confirmPass = document.getElementById("confirmPassword").value;
+
+    if (pass !== confirmPass) {
+        alert("Passwords do not match!");
+        e.preventDefault();
+    }
+});
+
+/* SHOW SUCCESS POPUP AFTER REDIRECT */
+window.onload = function () {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("success") === "1") {
+        document.getElementById("successPopup").style.display = "flex";
+    }
+};
+
+/* OPTIONAL: CLOSE POPUP WHEN CLICK OUTSIDE */
+document.addEventListener("click", function (e) {
+    const popup = document.getElementById("successPopup");
+
+    if (e.target === popup) {
+        popup.style.display = "none";
+    }
+});
+
+</script>
+
 </body>
 </html>
