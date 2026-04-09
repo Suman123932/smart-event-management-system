@@ -29,9 +29,9 @@ if ($result->num_rows == 1) {
         // Decide dashboard
         $redirect = "";
         switch ($_SESSION['role']) {
-            case "super_admin": $redirect = "super_admin_dashboard.php"; break;
-            case "dept_admin": $redirect = "dept_admin_dashboard.php"; break;
-            case "event_organizer": $redirect = "organizer_dashboard.php"; break;
+            case "super_admin": $redirect = "superadmin_dashboard.html"; break;
+            case "dept_admin": $redirect = "dept_admin_dashboard.html"; break;
+            case "event_organizer": $redirect = "event_dashboard.html"; break;
             case "student": $redirect = "student_dashboard.php"; break;
             default: $redirect = "login.html"; break;
         }

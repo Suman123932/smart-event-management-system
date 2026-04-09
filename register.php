@@ -10,10 +10,11 @@ if ($conn->connect_error) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $user_id = $_POST['userId'];
+   // $user_id = $_POST['userId'];
     $full_name = $_POST['full_name'];
     $email = $_POST['email'];
     $role = $_POST['role'];
+    $departmentGroup=$_POST['departmentGroup'] ?? '';
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirmPassword'];
 
@@ -33,9 +34,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    $stmt = $conn->prepare("INSERT INTO users (user_id, full_name, email, role, password)
-                            VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $user_id, $full_name, $email, $role, $hashedPassword);
+    $stmt = $conn->prepare("INSERT INTO users (full_name, email, role, departmentGroup, password)
+                            VALUES (?, ?, ?, ?,?)");
+    $stmt->bind_param("sssss", $full_name, $email, $role, $departmentGroup, $hashedPassword);
 
     if ($stmt->execute()) {
         echo "Registration successful";

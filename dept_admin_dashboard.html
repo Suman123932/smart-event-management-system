@@ -1,51 +1,55 @@
 <!DOCTYPE html>
-
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Department Admin Dashboard</title>
+<title>Dept Admin Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
 
+/* BACKGROUND */
 body{
 display:flex;
 height:100vh;
-background:linear-gradient(270deg,#43cea2,#185a9d,#6dd5ed,#2193b0);
-background-size:800% 800%;
-animation:bg 15s ease infinite;
+background:linear-gradient(135deg,#141e30,#243b55);
 color:white;
-}
-
-@keyframes bg{
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
 }
 
 /* SIDEBAR */
 .sidebar{
-width:220px;
-background:rgba(0,0,0,0.4);
+width:240px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(15px);
 padding:20px;
 display:flex;
 flex-direction:column;
 gap:15px;
 }
 
-.sidebar h2{text-align:center;}
+.sidebar h2{
+text-align:center;
+}
 
+/* BUTTON */
 .sidebar button{
 padding:12px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 cursor:pointer;
-background:#00c9a7;
+background:rgba(255,255,255,0.1);
 color:white;
+transition:0.3s;
 }
 
-.sidebar button:hover{background:#00a389;}
+.sidebar button:hover{
+background:#00c9a7;
+}
 
 /* CONTENT */
 .content{
@@ -54,112 +58,115 @@ padding:20px;
 overflow:auto;
 }
 
+/* HEADER */
+.header{
+background:rgba(255,255,255,0.08);
+padding:15px;
+border-radius:15px;
+margin-bottom:20px;
+font-size:22px;
+font-weight:bold;
+text-align:center;
+}
+
+/* SECTION */
 .section{display:none;}
 .active{display:block;}
 
 .card{
-background:rgba(255,255,255,0.15);
+background:rgba(255,255,255,0.08);
 padding:20px;
-border-radius:10px;
-margin-bottom:20px;
+border-radius:15px;
 }
 
-/* TABLE */
-table{width:100%;margin-top:10px;border-collapse:collapse;}
-th,td{padding:10px;text-align:center;}
-th{background:rgba(0,0,0,0.3);}
-td{background:rgba(255,255,255,0.15);}
+/* PROFILE */
+.profile-card{
+text-align:center;
+}
 
-/* GALLERY */
+/* CIRCULAR IMAGE */
+.profile-img{
+width:130px;
+height:130px;
+border-radius:50%;
+border:3px solid #00c9a7;
+object-fit:cover;
+cursor:pointer;
+}
+
+/* HIDDEN INPUT */
+#imgInput{
+display:none;
+}
+
+.info{
+margin-top:15px;
+}
+
+.info p{
+margin:5px 0;
+}
+
 .gallery img{
 width:120px;
 margin:10px;
 border-radius:10px;
 }
-
-input,select{
-padding:10px;
-margin:5px;
-border:none;
-border-radius:6px;
-}
-
-button.action{
-background:#ff7a18;
-margin:3px;
-}
 </style>
-
 </head>
 
 <body>
 
 <!-- SIDEBAR -->
-
 <div class="sidebar">
 <h2>Dept Admin</h2>
-<button onclick="showSection('create')">Create Event</button>
-<button onclick="showSection('track')">Track Events</button>
-<button onclick="showSection('poster')">Poster Upload</button>
-<button onclick="showSection('analysis')">Analysis</button>
-<button onclick="logout()">Logout</button>
+
+<button onclick="showSection('profile')">👤 Profile</button>
+<button onclick="showSection('poster')">🖼 Posters</button>
+<button onclick="showSection('analysis')">📊 Analysis</button>
+<button onclick="logout()">🚪 Logout</button>
+
 </div>
 
 <!-- CONTENT -->
-
 <div class="content">
 
-<!-- CREATE EVENT -->
+<div class="header" id="headerTitle"></div>
 
-<div id="create" class="section active">
-<div class="card">
-<h3>Create Event</h3>
+<!-- PROFILE -->
+<div id="profile" class="section active">
+<div class="card profile-card">
 
-<input id="name" placeholder="Event Name">
-<input type="date" id="date">
-<input type="number" id="reg" placeholder="Registrations">
+<h3>My Profile</h3>
 
-<button onclick="createEvent()">Create</button>
+<img id="profileImg" class="profile-img" src="" onclick="triggerUpload()">
+
+<input type="file" id="imgInput" onchange="uploadImage(event)">
+
+<div class="info">
+<p id="name"></p>
+<p id="email"></p>
+<p id="dept"></p>
+</div>
 
 </div>
 </div>
 
-<!-- TRACK EVENTS -->
-
-<div id="track" class="section">
-<div class="card">
-<h3>Track Events</h3>
-
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Date</th>
-<th>Registrations</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody id="eventTable"></tbody>
-</table>
-
-</div>
-</div>
-
-<!-- POSTER UPLOAD -->
-
+<!-- POSTER -->
 <div id="poster" class="section">
 <div class="card">
-<h3>Upload Event Poster</h3>
+<h3>Upload Posters</h3>
+
 <input type="file" onchange="uploadPoster(event)">
 <div id="posterGallery" class="gallery"></div>
+
 </div>
 </div>
 
 <!-- ANALYSIS -->
-
 <div id="analysis" class="section">
 <div class="card">
-<h3>Department Analysis</h3>
+<h3>Analytics</h3>
 <canvas id="chart"></canvas>
 </div>
 </div>
@@ -168,111 +175,80 @@ margin:3px;
 
 <script>
 
-let dept="Computer Science" // change per department login
+/* FETCH REGISTERED USER */
+let user = JSON.parse(localStorage.getItem("user")) || {}
+let posters = JSON.parse(localStorage.getItem("posters")) || []
 
-let events=JSON.parse(localStorage.getItem("events"))||[]
-let posters=JSON.parse(localStorage.getItem("posters"))||[]
+/* SET HEADER */
+document.getElementById("headerTitle").innerText = user.name + " (Dept Admin)"
 
+/* NAV */
 function showSection(id){
 document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
 document.getElementById(id).classList.add("active")
 load()
 }
 
-/* CREATE EVENT */
-function createEvent(){
-let name=document.getElementById("name").value
-let date=document.getElementById("date").value
-let reg=parseInt(document.getElementById("reg").value)
+/* LOAD PROFILE */
+function loadProfile(){
 
-events.push({
-name,
-date,
-reg,
-dept,
-status:"Pending"
-})
+document.getElementById("name").innerText = "Name: " + (user.name || "")
+document.getElementById("email").innerText = "Email: " + (user.email || "")
+document.getElementById("dept").innerText = "Department: " + (user.dept || "")
 
-save()
-load()
+/* IMAGE */
+document.getElementById("profileImg").src =
+user.img || "https://cdn-icons-png.flaticon.com/512/149/149071.png"
 }
 
-/* TRACK EVENTS */
-function load(){
+/* IMAGE CLICK */
+function triggerUpload(){
+document.getElementById("imgInput").click()
+}
 
-let table=""
-let labels=[]
-let data=[]
+/* UPLOAD IMAGE */
+function uploadImage(e){
+let reader = new FileReader()
 
-events.filter(e=>e.dept===dept).forEach(e=>{
-table+=`
-<tr>
-<td>${e.name}</td>
-<td>${e.date}</td>
-<td>${e.reg}</td>
-<td>${e.status}</td>
-</tr>`
+reader.onload = function(){
+user.img = reader.result
+localStorage.setItem("user", JSON.stringify(user))
+loadProfile()
+}
 
-labels.push(e.name)
-data.push(e.reg)
-})
-
-document.getElementById("eventTable").innerHTML=table
-
-drawChart(labels,data)
+reader.readAsDataURL(e.target.files[0])
+}
 
 /* POSTERS */
-let imgs=""
-posters.forEach(p=>{
-if(p.dept===dept){
-imgs+=`<img src="${p.img}">`
-}
-})
-document.getElementById("posterGallery").innerHTML=imgs
-
-}
-
-/* POSTER UPLOAD */
 function uploadPoster(e){
-let file=e.target.files[0]
 let reader=new FileReader()
 
 reader.onload=function(){
-posters.push({dept,img:reader.result})
+posters.push({dept:user.dept,img:reader.result})
 localStorage.setItem("posters",JSON.stringify(posters))
 load()
 }
 
-reader.readAsDataURL(file)
+reader.readAsDataURL(e.target.files[0])
 }
 
-/* CHART */
-let chart
-function drawChart(labels,data){
+/* LOAD */
+function load(){
 
-if(chart) chart.destroy()
+loadProfile()
 
-chart=new Chart(document.getElementById("chart"),{
-type:"bar",
-data:{
-labels:labels,
-datasets:[{
-label:"Registrations",
-data:data,
-backgroundColor:"#00f2fe"
-}]
+let imgs=""
+posters.forEach(p=>{
+if(p.dept===user.dept){
+imgs+=`<img src="${p.img}">`
 }
 })
-}
-
-/* SAVE */
-function save(){
-localStorage.setItem("events",JSON.stringify(events))
+document.getElementById("posterGallery").innerHTML=imgs
 }
 
 /* LOGOUT */
 function logout(){
-window.location.href="index.html";
+window.location.href="index.html"
 }
 
 load()

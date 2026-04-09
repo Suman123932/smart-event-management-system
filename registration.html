@@ -1,13 +1,39 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Register</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- KEEP YOUR ORIGINAL CSS -->
+
+    <!-- Your CSS -->
     <link rel="stylesheet" href="register.css">
+
+    <style>
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #departmentGroup {
+            display: none;
+        }
+    </style>
 </head>
+
 <body>
 
 <div class="auth-container">
@@ -18,24 +44,22 @@
 <h2>Create Account</h2>
 <p class="subtitle">Join the Event Management System</p>
 
-<div class="input-group">
-<label>User ID</label>
-<input type="text" name="userId" required>
-</div>
-
+<!-- Full Name -->
 <div class="input-group">
 <label>Full Name</label>
 <input type="text" name="full_name" required>
 </div>
 
+<!-- Email -->
 <div class="input-group">
 <label>Email</label>
 <input type="email" name="email" required>
 </div>
 
+<!-- Role -->
 <div class="input-group">
 <label>Role</label>
-<select name="role" required>
+<select name="role" id="role" required>
 <option value="" disabled selected>Select role</option>
 <option value="super_admin">Super Admin</option>
 <option value="dept_admin">Dept Admin</option>
@@ -44,14 +68,60 @@
 </select>
 </div>
 
+<!-- Department (only for Dept Admin) -->
 <div class="input-group">
-<label>Password</label>
-<input type="password" id="password" name="password" required>
+<label>Department</label>
+<select name="departmentGroup" id="departmentGroup" required>
+<option value="">Select Department</option>
+
+<option>Computer Science</option>
+<option>Information Technology</option>
+<option>Electronics Engineering</option>
+<option>Mechanical Engineering</option>
+<option>Civil Engineering</option>
+<option>Electrical Engineering</option>
+<option>Chemical Engineering</option>
+<option>Aerospace Engineering</option>
+<option>Biotechnology</option>
+<option>Biomedical Engineering</option>
+
+<option>Physics</option>
+<option>Chemistry</option>
+<option>Mathematics</option>
+<option>Statistics</option>
+<option>Environmental Science</option>
+
+<option>Commerce</option>
+<option>Economics</option>
+<option>Business Administration</option>
+<option>Management Studies</option>
+<option>Accounting & Finance</option>
+
+<option>English</option>
+<option>History</option>
+<option>Political Science</option>
+<option>Sociology</option>
+<option>Psychology</option>
+
+<option>Law</option>
+<option>Education</option>
+<option>Pharmacy</option>
+<option>Architecture</option>
+<option>Fine Arts</option>
+
+</select>
 </div>
 
+<!-- Password -->
+<div class="input-group">
+<label>Password</label>
+<input type="password" name="password" id="password" required>
+</div>
+
+<!-- Confirm Password -->
 <div class="input-group">
 <label>Confirm Password</label>
-<input type="password" id="confirmPassword" name="confirmPassword" required>
+<input type="password" name="confirmPassword" id="confirmPassword" required>
 </div>
 
 <button type="submit" class="btn">Register</button>
@@ -61,53 +131,49 @@
 </div>
 
 <!-- ✅ SUCCESS POPUP -->
-<!--<div id="successPopup" class="popup">
+<div id="successPopup" class="popup">
     <div class="popup-content">
         <h2>Registration Successful 🎉</h2>
-        <p>Account created successfully</p>
-        
+        <p>Your account has been created successfully</p>
+        <button onclick="goToLogin()" class="btn">Go to Login</button>
     </div>
 </div>
--->
-<!-- Popup -->
-<div id="popup">
-    <p>✅ Registration Successful!</p>
-    <button onclick="goToLogin()">Go to Login</button>
-</div>
 
 <script>
-    function showPopup() {
-        document.getElementById("popup").style.display = "block";
-    }
 
-    function goToLogin() {
-        window.location.href = "login.html";
-    }
-</script>
-<!-- ✅ SCRIPT -->
-<script>
+/* SHOW/HIDE DEPARTMENT FIELD */
+document.getElementById("role").addEventListener("change", function () {
+    let deptGroup = document.getElementById("departmentGroup");
 
-/* PASSWORD MATCH VALIDATION */
+    if (this.value === "dept_admin") {
+        deptGroup.style.display = "block";
+    } else {
+        deptGroup.style.display = "none";
+    }
+});
+
+/* FORM SUBMIT */
 document.getElementById("registerForm").addEventListener("submit", function(e) {
+   // e.preventDefault(); // stop default form submit
+
     let pass = document.getElementById("password").value;
     let confirmPass = document.getElementById("confirmPassword").value;
 
     if (pass !== confirmPass) {
         alert("Passwords do not match!");
-        e.preventDefault();
+        return;
     }
+
+    // ✅ SIMULATE SUCCESS (replace with PHP later)
+    document.getElementById("successPopup").style.display = "flex";
 });
 
-/* SHOW SUCCESS POPUP AFTER REDIRECT */
-window.onload = function () {
-    const params = new URLSearchParams(window.location.search);
+/* GO TO LOGIN */
+function goToLogin() {
+    window.location.href = "login.html";
+}
 
-    if (params.get("success") === "1") {
-        document.getElementById("successPopup").style.display = "flex";
-    }
-};
-
-/* OPTIONAL: CLOSE POPUP WHEN CLICK OUTSIDE */
+/* CLOSE POPUP ON OUTSIDE CLICK */
 document.addEventListener("click", function (e) {
     const popup = document.getElementById("successPopup");
 
