@@ -24,15 +24,19 @@ if ($result->num_rows == 1) {
 
     if (password_verify($password, $row['password'])) {
         $_SESSION['user'] = $row['full_name'];
+        
         $_SESSION['role'] = strtolower($row['role']);
+        $_SESSION['user_id'] = $row['id'];
+        $_SESSION['email'] = $row['email'];
+        $_SESSION['department'] = $row['department'];
 
         // Decide dashboard
         $redirect = "";
         switch ($_SESSION['role']) {
-            case "super_admin": $redirect = "superadmin_dashboard.html"; break;
-            case "dept_admin": $redirect = "dept_admin_dashboard.html"; break;
-            case "event_organizer": $redirect = "event_dashboard.html"; break;
-            case "student": $redirect = "student_dashboard.php"; break;
+            case "super_admin": $redirect = "super_admin_dashboard.php"; break;
+            case "dept_admin": $redirect = "dept_admin_dashboard.php"; break;
+            case "event_organizer": $redirect = "organiser_dashboard.php"; break;
+           // case "student": $redirect = "student_dashboard.php"; break;
             default: $redirect = "login.html"; break;
         }
 

@@ -1,11 +1,11 @@
 <?php
 session_start();
 
-/* ROLE BASED ACCESS CONTROL */
+/* ROLE CHECK */
 
 if (
     !isset($_SESSION['role']) ||
-    $_SESSION['role'] != 'super_admin'
+    $_SESSION['role'] != 'dept_admin'
 ) {
     header("Location: login.html");
     exit();
@@ -16,57 +16,57 @@ if (
 $conn = mysqli_connect("localhost", "root", "", "eventdb");
 
 if (!$conn) {
-    die("Database connection failed");
+    die("Connection Failed");
 }
 
 /* SESSION DATA */
 
-$adminName = $_SESSION['user'];
-$adminEmail = $_SESSION['email'];
+$user_id = $_SESSION['user_id'];
+$name = $_SESSION['user'];
+$email = $_SESSION['email'];
+$department = $_SESSION['department'];
 
-/* FETCH PENDING EVENTS */
+/* FETCH EVENTS CREATED BY THIS DEPT ADMIN */
 
-$pendingQuery = "
+$eventQuery = "
 SELECT * FROM events
-WHERE organizer_status='Approved'
-AND superadmin_status='Pending'
-";
-
-$pendingResult = mysqli_query($conn, $pendingQuery);
-
-$pendingCount = mysqli_num_rows($pendingResult);
-
-/* FETCH APPROVED EVENTS */
-
-$approvedQuery = "
-SELECT * FROM events
-WHERE final_status='Approved'
-";
-
-$approvedResult = mysqli_query($conn, $approvedQuery);
-
-$approvedCount = mysqli_num_rows($approvedResult);
-
-/* FETCH REJECTED EVENTS */
-
-$rejectedQuery = "
-SELECT * FROM events
-WHERE final_status='Rejected'
-";
-
-$rejectedResult = mysqli_query($conn, $rejectedQuery);
-
-$rejectedCount = mysqli_num_rows($rejectedResult);
-
-/* FETCH APPROVED EVENTS TABLE */
-
-$approvedEventsQuery = "
-SELECT * FROM events
-WHERE final_status='Approved'
+WHERE created_by='$user_id'
 ORDER BY created_at DESC
 ";
 
-$approvedEventsResult = mysqli_query($conn, $approvedEventsQuery);
+$eventResult = mysqli_query($conn, $eventQuery);
+
+/* COUNTS */
+
+$pendingCountQuery = "
+SELECT * FROM events
+WHERE created_by='$user_id'
+AND final_status='Pending'
+";
+
+$pendingCount = mysqli_num_rows(
+mysqli_query($conn, $pendingCountQuery)
+);
+
+$approvedCountQuery = "
+SELECT * FROM events
+WHERE created_by='$user_id'
+AND final_status='Approved'
+";
+
+$approvedCount = mysqli_num_rows(
+mysqli_query($conn, $approvedCountQuery)
+);
+
+$rejectedCountQuery = "
+SELECT * FROM events
+WHERE created_by='$user_id'
+AND final_status='Rejected'
+";
+
+$rejectedCount = mysqli_num_rows(
+mysqli_query($conn, $rejectedCountQuery)
+);
 
 ?>
 
@@ -79,7 +79,7 @@ $approvedEventsResult = mysqli_query($conn, $approvedEventsQuery);
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Super Admin Dashboard</title>
+<title>Department Admin Dashboard</title>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
@@ -110,7 +110,6 @@ left:0;
 top:0;
 box-shadow:2px 0 20px rgba(0,0,0,0.1);
 overflow-y:auto;
-z-index:1000;
 }
 
 .sidebar-header{
@@ -274,29 +273,49 @@ background:#f8d7da;
 color:#721c24;
 }
 
-/* BUTTONS */
+/* FORM */
+
+.form-container{
+background:white;
+padding:30px;
+border-radius:20px;
+max-width:800px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+.form-group{
+margin-bottom:20px;
+}
+
+.form-group label{
+display:block;
+margin-bottom:8px;
+font-weight:600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+width:100%;
+padding:14px;
+border:2px solid #ddd;
+border-radius:12px;
+font-size:15px;
+}
 
 .btn{
-padding:10px 18px;
+background:linear-gradient(45deg,#667eea,#764ba2);
+color:white;
 border:none;
-border-radius:10px;
+padding:14px 20px;
+border-radius:12px;
 cursor:pointer;
 font-weight:bold;
-color:white;
-margin-right:5px;
 transition:0.3s;
 }
 
 .btn:hover{
 transform:translateY(-2px);
-}
-
-.btn-approve{
-background:#2ecc71;
-}
-
-.btn-reject{
-background:#e74c3c;
 }
 
 /* PROFILE */
@@ -321,23 +340,6 @@ color:white;
 margin:auto auto 20px;
 }
 
-.form-group{
-margin-bottom:20px;
-}
-
-.form-group label{
-display:block;
-margin-bottom:8px;
-font-weight:600;
-}
-
-.form-group input{
-width:100%;
-padding:14px;
-border:2px solid #ddd;
-border-radius:12px;
-}
-
 /* MOBILE */
 
 @media(max-width:768px){
@@ -345,6 +347,7 @@ border-radius:12px;
 .sidebar{
 transform:translateX(-100%);
 transition:0.3s;
+z-index:1000;
 }
 
 .sidebar.active{
@@ -391,13 +394,13 @@ cursor:pointer;
 <div class="sidebar-header">
 
 <div class="logo">
-<i class="fas fa-user-shield"></i> Super Admin
+<i class="fas fa-user-cog"></i> Dept Admin
 </div>
 
 <div class="user-info">
-<?php echo $adminName; ?>
+<?php echo $name; ?>
 <br>
-<small>System Administrator</small>
+<small><?php echo $department; ?></small>
 </div>
 
 </div>
@@ -408,12 +411,12 @@ cursor:pointer;
 <i class="fas fa-tachometer-alt"></i> Dashboard
 </li>
 
-<li class="nav-item" onclick="showSection('manage-events',event)">
-<i class="fas fa-calendar-check"></i> Manage Events
+<li class="nav-item" onclick="showSection('create-event',event)">
+<i class="fas fa-plus-circle"></i> Create Event
 </li>
 
-<li class="nav-item" onclick="showSection('approved-events',event)">
-<i class="fas fa-calendar-alt"></i> Approved Events
+<li class="nav-item" onclick="showSection('my-events',event)">
+<i class="fas fa-calendar-alt"></i> My Events
 </li>
 
 <li class="nav-item" onclick="showSection('analytics',event)">
@@ -443,7 +446,7 @@ cursor:pointer;
 <div id="dashboard" class="section active">
 
 <h1 style="color:white;margin-bottom:30px;">
-Super Admin Dashboard
+Dashboard
 </h1>
 
 <div class="dashboard-grid">
@@ -509,12 +512,74 @@ Super Admin Dashboard
 
 </div>
 
-<!-- MANAGE EVENTS -->
+<!-- CREATE EVENT -->
 
-<div id="manage-events" class="section">
+<div id="create-event" class="section">
 
 <h1 style="color:white;margin-bottom:30px;">
-Manage Events
+Create Event
+</h1>
+
+<div class="form-container">
+
+<form action="create_event.php" method="POST">
+
+<div class="form-group">
+<label>Event Title</label>
+<input type="text" name="title" required>
+</div>
+
+<div class="form-group">
+<label>Event Date</label>
+<input type="datetime-local" name="date" required>
+</div>
+
+<div class="form-group">
+<label>Venue</label>
+<input type="text" name="venue" required>
+</div>
+
+<div class="form-group">
+<label>Category</label>
+
+<select name="category" required>
+
+<option value="">Select Category</option>
+<option value="Technical">Technical</option>
+<option value="Workshop">Workshop</option>
+<option value="Seminar">Seminar</option>
+<option value="Cultural">Cultural</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+<label>Capacity</label>
+<input type="number" name="capacity" required>
+</div>
+
+<div class="form-group">
+<label>Description</label>
+<textarea name="description" rows="5" required></textarea>
+</div>
+
+<button type="submit" class="btn">
+Create Event
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- MY EVENTS -->
+
+<div id="my-events" class="section">
+
+<h1 style="color:white;margin-bottom:30px;">
+My Events
 </h1>
 
 <div class="table-container">
@@ -525,11 +590,11 @@ Manage Events
 
 <tr>
 <th>Event</th>
-<th>Department</th>
-<th>Venue</th>
 <th>Date</th>
-<th>Status</th>
-<th>Actions</th>
+<th>Venue</th>
+<th>Organizer Status</th>
+<th>Super Admin Status</th>
+<th>Final Status</th>
 </tr>
 
 </thead>
@@ -537,107 +602,65 @@ Manage Events
 <tbody>
 
 <?php
-while($row = mysqli_fetch_assoc($pendingResult)){
+while($row = mysqli_fetch_assoc($eventResult)){
 ?>
 
 <tr>
 
 <td><?php echo $row['title']; ?></td>
 
-<td><?php echo $row['department']; ?></td>
-
-<td><?php echo $row['venue']; ?></td>
-
 <td>
 <?php echo date("d M Y h:i A", strtotime($row['event_date'])); ?>
 </td>
 
-<td>
-<span class="status pending">
-Pending
-</span>
-</td>
+<td><?php echo $row['venue']; ?></td>
 
 <td>
-
-<a href="approve_superadmin.php?id=<?php echo $row['user_id']; ?>">
-
-<button class="btn btn-approve">
-<i class="fas fa-check"></i> Approve
-</button>
-
-</a>
-
-<a href="reject_superadmin.php?id=<?php echo $row['user_id']; ?>">
-
-<button class="btn btn-reject">
-<i class="fas fa-times"></i> Reject
-</button>
-
-</a>
-
-</td>
-
-</tr>
 
 <?php
+if($row['organizer_status']=="Approved"){
+echo "<span class='status approved'>Approved</span>";
+}
+elseif($row['organizer_status']=="Rejected"){
+echo "<span class='status rejected'>Rejected</span>";
+}
+else{
+echo "<span class='status pending'>Pending</span>";
 }
 ?>
 
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<!-- APPROVED EVENTS -->
-
-<div id="approved-events" class="section">
-
-<h1 style="color:white;margin-bottom:30px;">
-Approved Events
-</h1>
-
-<div class="table-container">
-
-<table class="events-table">
-
-<thead>
-
-<tr>
-<th>Event</th>
-<th>Department</th>
-<th>Venue</th>
-<th>Date</th>
-<th>Status</th>
-</tr>
-
-</thead>
-
-<tbody>
-
-<?php
-while($approvedRow = mysqli_fetch_assoc($approvedEventsResult)){
-?>
-
-<tr>
-
-<td><?php echo $approvedRow['title']; ?></td>
-
-<td><?php echo $approvedRow['department']; ?></td>
-
-<td><?php echo $approvedRow['venue']; ?></td>
-
-<td>
-<?php echo date("d M Y", strtotime($approvedRow['event_date'])); ?>
 </td>
 
 <td>
-<span class="status approved">
-Approved
-</span>
+
+<?php
+if($row['superadmin_status']=="Approved"){
+echo "<span class='status approved'>Approved</span>";
+}
+elseif($row['superadmin_status']=="Rejected"){
+echo "<span class='status rejected'>Rejected</span>";
+}
+else{
+echo "<span class='status pending'>Pending</span>";
+}
+?>
+
+</td>
+
+<td>
+
+<?php
+if($row['final_status']=="Approved"){
+echo "<span class='status approved'>Approved</span>";
+}
+elseif($row['final_status']=="Rejected"){
+echo "<span class='status rejected'>Rejected</span>";
+}
+else{
+echo "<span class='status pending'>Pending</span>";
+}
+?>
+
 </td>
 
 </tr>
@@ -681,22 +704,27 @@ My Profile
 <div class="profile-card">
 
 <div class="profile-avatar">
-<i class="fas fa-user-shield"></i>
+<i class="fas fa-user"></i>
 </div>
 
 <div class="form-group">
 <label>Name</label>
-<input type="text" value="<?php echo $adminName; ?>" readonly>
+<input type="text" value="<?php echo $name; ?>" readonly>
 </div>
 
 <div class="form-group">
 <label>Email</label>
-<input type="text" value="<?php echo $adminEmail; ?>" readonly>
+<input type="text" value="<?php echo $email; ?>" readonly>
+</div>
+
+<div class="form-group">
+<label>Department</label>
+<input type="text" value="<?php echo $department; ?>" readonly>
 </div>
 
 <div class="form-group">
 <label>Role</label>
-<input type="text" value="Super Admin" readonly>
+<input type="text" value="Department Admin" readonly>
 </div>
 
 </div>

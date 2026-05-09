@@ -5,7 +5,7 @@ session_start();
 
 if (
     !isset($_SESSION['role']) ||
-    $_SESSION['role'] != 'super_admin'
+    $_SESSION['role'] != 'event_organizer'
 ) {
     header("Location: login.html");
     exit();
@@ -21,15 +21,14 @@ if (!$conn) {
 
 /* SESSION DATA */
 
-$adminName = $_SESSION['user'];
-$adminEmail = $_SESSION['email'];
+$organizerName = $_SESSION['user'];
+$organizerEmail = $_SESSION['email'];
 
 /* FETCH PENDING EVENTS */
 
 $pendingQuery = "
 SELECT * FROM events
-WHERE organizer_status='Approved'
-AND superadmin_status='Pending'
+WHERE organizer_status='Pending'
 ";
 
 $pendingResult = mysqli_query($conn, $pendingQuery);
@@ -40,7 +39,7 @@ $pendingCount = mysqli_num_rows($pendingResult);
 
 $approvedQuery = "
 SELECT * FROM events
-WHERE final_status='Approved'
+WHERE organizer_status='Approved'
 ";
 
 $approvedResult = mysqli_query($conn, $approvedQuery);
@@ -51,7 +50,7 @@ $approvedCount = mysqli_num_rows($approvedResult);
 
 $rejectedQuery = "
 SELECT * FROM events
-WHERE final_status='Rejected'
+WHERE organizer_status='Rejected'
 ";
 
 $rejectedResult = mysqli_query($conn, $rejectedQuery);
@@ -62,7 +61,7 @@ $rejectedCount = mysqli_num_rows($rejectedResult);
 
 $approvedEventsQuery = "
 SELECT * FROM events
-WHERE final_status='Approved'
+WHERE organizer_status='Approved'
 ORDER BY created_at DESC
 ";
 
@@ -79,7 +78,7 @@ $approvedEventsResult = mysqli_query($conn, $approvedEventsQuery);
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Super Admin Dashboard</title>
+<title>Organizer Dashboard</title>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
@@ -391,13 +390,13 @@ cursor:pointer;
 <div class="sidebar-header">
 
 <div class="logo">
-<i class="fas fa-user-shield"></i> Super Admin
+<i class="fas fa-user-tie"></i> Organizer
 </div>
 
 <div class="user-info">
-<?php echo $adminName; ?>
+<?php echo $organizerName; ?>
 <br>
-<small>System Administrator</small>
+<small>Event Organizer</small>
 </div>
 
 </div>
@@ -443,7 +442,7 @@ cursor:pointer;
 <div id="dashboard" class="section active">
 
 <h1 style="color:white;margin-bottom:30px;">
-Super Admin Dashboard
+Organizer Dashboard
 </h1>
 
 <div class="dashboard-grid">
@@ -560,7 +559,7 @@ Pending
 
 <td>
 
-<a href="approve_superadmin.php?id=<?php echo $row['user_id']; ?>">
+<a href="approve_organizer.php?id=<?php echo $row['id']; ?>">
 
 <button class="btn btn-approve">
 <i class="fas fa-check"></i> Approve
@@ -568,7 +567,7 @@ Pending
 
 </a>
 
-<a href="reject_superadmin.php?id=<?php echo $row['user_id']; ?>">
+<a href="reject_organizer.php?id=<?php echo $row['id']; ?>">
 
 <button class="btn btn-reject">
 <i class="fas fa-times"></i> Reject
@@ -681,22 +680,22 @@ My Profile
 <div class="profile-card">
 
 <div class="profile-avatar">
-<i class="fas fa-user-shield"></i>
+<i class="fas fa-user"></i>
 </div>
 
 <div class="form-group">
 <label>Name</label>
-<input type="text" value="<?php echo $adminName; ?>" readonly>
+<input type="text" value="<?php echo $organizerName; ?>" readonly>
 </div>
 
 <div class="form-group">
 <label>Email</label>
-<input type="text" value="<?php echo $adminEmail; ?>" readonly>
+<input type="text" value="<?php echo $organizerEmail; ?>" readonly>
 </div>
 
 <div class="form-group">
 <label>Role</label>
-<input type="text" value="Super Admin" readonly>
+<input type="text" value="Event Organizer" readonly>
 </div>
 
 </div>

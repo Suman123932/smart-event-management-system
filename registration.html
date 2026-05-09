@@ -1,185 +1,230 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Register</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Your CSS -->
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="register.css">
 
     <style>
-        .popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            justify-content: center;
-            align-items: center;
+
+        .popup{
+            display:none;
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.6);
+            justify-content:center;
+            align-items:center;
         }
 
-        .popup-content {
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
+        .popup-content{
+            background:#fff;
+            padding:25px;
+            border-radius:10px;
+            text-align:center;
         }
 
-        #departmentGroup {
-            display: none;
-        }
     </style>
+
 </head>
 
 <body>
 
 <div class="auth-container">
+
 <div class="form-box">
 
-<form id="registerForm" action="register.php" method="POST">
+<form id="registerForm"
+      action="register.php"
+      method="POST">
 
 <h2>Create Account</h2>
-<p class="subtitle">Join the Event Management System</p>
 
-<!-- Full Name -->
+<p class="subtitle">
+Join the Event Management System
+</p>
+
+<!-- FULL NAME -->
 <div class="input-group">
+
 <label>Full Name</label>
-<input type="text" name="full_name" required>
+
+<input type="text"
+       name="full_name"
+       required>
+
 </div>
 
-<!-- Email -->
+<!-- EMAIL -->
 <div class="input-group">
+
 <label>Email</label>
-<input type="email" name="email" required>
+
+<input type="email"
+       name="email"
+       required>
+
 </div>
 
-<!-- Role -->
+<!-- ROLE -->
 <div class="input-group">
+
 <label>Role</label>
-<select name="role" id="role" required>
-<option value="" disabled selected>Select role</option>
-<option value="super_admin">Super Admin</option>
-<option value="dept_admin">Dept Admin</option>
-<option value="event_organizer">Event Organizer</option>
-<option value="Student">CR</option>
+
+<select name="role"
+        id="role"
+        required>
+
+<option value="">Select Role</option>
+
+<option value="super_admin">
+Super Admin
+</option>
+
+<option value="dept_admin">
+Dept Admin
+</option>
+
+<option value="event_organizer">
+Event Organizer
+</option>
+
 </select>
+
 </div>
 
-<!-- Department (only for Dept Admin) -->
-<div class="input-group">
+<!-- DEPARTMENT -->
+<div class="input-group"
+     id="departmentContainer">
+
 <label>Department</label>
-<select name="departmentGroup" id="departmentGroup" required>
-<option value="">Select Department</option>
+
+<select name="departmentGroup"
+        id="departmentGroup">
+
+<option value="">
+Select Department
+</option>
 
 <option>Computer Science</option>
+
 <option>Information Technology</option>
+
 <option>Electronics Engineering</option>
+
 <option>Mechanical Engineering</option>
+
 <option>Civil Engineering</option>
+
 <option>Electrical Engineering</option>
+
 <option>Chemical Engineering</option>
-<option>Aerospace Engineering</option>
-<option>Biotechnology</option>
-<option>Biomedical Engineering</option>
-
-<option>Physics</option>
-<option>Chemistry</option>
-<option>Mathematics</option>
-<option>Statistics</option>
-<option>Environmental Science</option>
-
-<option>Commerce</option>
-<option>Economics</option>
-<option>Business Administration</option>
-<option>Management Studies</option>
-<option>Accounting & Finance</option>
-
-<option>English</option>
-<option>History</option>
-<option>Political Science</option>
-<option>Sociology</option>
-<option>Psychology</option>
-
-<option>Law</option>
-<option>Education</option>
-<option>Pharmacy</option>
-<option>Architecture</option>
-<option>Fine Arts</option>
 
 </select>
+
 </div>
 
-<!-- Password -->
+<!-- PASSWORD -->
 <div class="input-group">
+
 <label>Password</label>
-<input type="password" name="password" id="password" required>
+
+<input type="password"
+       name="password"
+       id="password"
+       required>
+
 </div>
 
-<!-- Confirm Password -->
+<!-- CONFIRM PASSWORD -->
 <div class="input-group">
+
 <label>Confirm Password</label>
-<input type="password" name="confirmPassword" id="confirmPassword" required>
+
+<input type="password"
+       name="confirmPassword"
+       id="confirmPassword"
+       required>
+
 </div>
 
-<button type="submit" class="btn">Register</button>
+<button type="submit"
+        class="btn">
+
+Register
+
+</button>
 
 </form>
-</div>
-</div>
 
-<!-- ✅ SUCCESS POPUP -->
-<div id="successPopup" class="popup">
-    <div class="popup-content">
-        <h2>Registration Successful 🎉</h2>
-        <p>Your account has been created successfully</p>
-        <button onclick="goToLogin()" class="btn">Go to Login</button>
-    </div>
+</div>
 </div>
 
 <script>
 
-/* SHOW/HIDE DEPARTMENT FIELD */
-document.getElementById("role").addEventListener("change", function () {
-    let deptGroup = document.getElementById("departmentGroup");
+/* ELEMENTS */
 
-    if (this.value === "dept_admin") {
-        deptGroup.style.display = "block";
-    } else {
-        deptGroup.style.display = "none";
+const role =
+document.getElementById("role");
+
+const departmentContainer =
+document.getElementById("departmentContainer");
+
+const departmentGroup =
+document.getElementById("departmentGroup");
+
+/* HIDE DEPARTMENT INITIALLY */
+
+departmentContainer.style.display = "none";
+
+/* SHOW/HIDE DEPARTMENT */
+
+role.addEventListener("change", function(){
+
+    if(this.value === "dept_admin"){
+
+        departmentContainer.style.display = "block";
+
+        departmentGroup.required = true;
+
     }
+
+    else{
+
+        departmentContainer.style.display = "none";
+
+        departmentGroup.required = false;
+
+        departmentGroup.value = "";
+    }
+
 });
 
-/* FORM SUBMIT */
-document.getElementById("registerForm").addEventListener("submit", function(e) {
-   // e.preventDefault(); // stop default form submit
+/* PASSWORD VALIDATION */
 
-    let pass = document.getElementById("password").value;
-    let confirmPass = document.getElementById("confirmPassword").value;
+document.getElementById("registerForm")
+.addEventListener("submit", function(e){
 
-    if (pass !== confirmPass) {
-        alert("Passwords do not match!");
-        return;
+    let pass =
+    document.getElementById("password").value;
+
+    let confirmPass =
+    document.getElementById("confirmPassword").value;
+
+    if(pass !== confirmPass){
+
+        e.preventDefault();
+
+        alert("Passwords do not match");
+
     }
 
-    // ✅ SIMULATE SUCCESS (replace with PHP later)
-    document.getElementById("successPopup").style.display = "flex";
-});
-
-/* GO TO LOGIN */
-function goToLogin() {
-    window.location.href = "login.html";
-}
-
-/* CLOSE POPUP ON OUTSIDE CLICK */
-document.addEventListener("click", function (e) {
-    const popup = document.getElementById("successPopup");
-
-    if (e.target === popup) {
-        popup.style.display = "none";
-    }
 });
 
 </script>
