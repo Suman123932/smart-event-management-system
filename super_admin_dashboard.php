@@ -560,7 +560,7 @@ Pending
 
 <td>
 
-<a href="approve_superadmin.php?id=<?php echo $row['user_id']; ?>">
+<a href="approve_superadmin.php?id=<?php echo $row['id']; ?>">
 
 <button class="btn btn-approve">
 <i class="fas fa-check"></i> Approve
@@ -568,7 +568,7 @@ Pending
 
 </a>
 
-<a href="reject_superadmin.php?id=<?php echo $row['user_id']; ?>">
+<a href="reject_superadmin.php?id=<?php echo $row['id']; ?>">
 
 <button class="btn btn-reject">
 <i class="fas fa-times"></i> Reject

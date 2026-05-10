@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-
 /* DATABASE CONNECTION */
 
 $conn = mysqli_connect("localhost", "root", "", "eventdb");
@@ -45,8 +44,8 @@ venue,
 category,
 capacity,
 description,
-created_by,
 department,
+created_by,
 organizer_status,
 superadmin_status,
 final_status,

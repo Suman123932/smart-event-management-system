@@ -26,7 +26,7 @@ if ($result->num_rows == 1) {
         $_SESSION['user'] = $row['full_name'];
         
         $_SESSION['role'] = strtolower($row['role']);
-        $_SESSION['user_id'] = $row['id'];
+        $_SESSION['user_id'] = $row['user_id'];
         $_SESSION['email'] = $row['email'];
         $_SESSION['department'] = $row['department'];
 
