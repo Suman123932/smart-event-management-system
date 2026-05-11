@@ -27,8 +27,21 @@ $organizerEmail = $_SESSION['email'];
 /* FETCH PENDING EVENTS */
 
 $pendingQuery = "
-SELECT * FROM events
+
+SELECT events.*,
+
+(
+SELECT COUNT(*)
+FROM event_registrations
+WHERE event_registrations.event_id = events.id
+)
+
+AS registered_students
+
+FROM events
+
 WHERE organizer_status='Pending'
+
 ";
 
 $pendingResult = mysqli_query($conn, $pendingQuery);
@@ -60,9 +73,23 @@ $rejectedCount = mysqli_num_rows($rejectedResult);
 /* FETCH APPROVED EVENTS TABLE */
 
 $approvedEventsQuery = "
-SELECT * FROM events
+
+SELECT events.*,
+
+(
+SELECT COUNT(*)
+FROM event_registrations
+WHERE event_registrations.event_id = events.id
+)
+
+AS registered_students
+
+FROM events
+
 WHERE organizer_status='Approved'
+
 ORDER BY created_at DESC
+
 ";
 
 $approvedEventsResult = mysqli_query($conn, $approvedEventsQuery);
@@ -528,6 +555,7 @@ Manage Events
 <th>Venue</th>
 <th>Date</th>
 <th>Status</th>
+<th>Registered Students</th>
 <th>Actions</th>
 </tr>
 
@@ -555,6 +583,11 @@ while($row = mysqli_fetch_assoc($pendingResult)){
 <span class="status pending">
 Pending
 </span>
+</td>
+<td>
+
+<?php echo $row['registered_students']; ?>
+
 </td>
 
 <td>
@@ -611,6 +644,8 @@ Approved Events
 <th>Venue</th>
 <th>Date</th>
 <th>Status</th>
+<th>Registered Students</th>
+<th>Attendance</th>
 </tr>
 
 </thead>
@@ -637,6 +672,27 @@ while($approvedRow = mysqli_fetch_assoc($approvedEventsResult)){
 <span class="status approved">
 Approved
 </span>
+</td>
+<td>
+
+<?php echo $approvedRow['registered_students']; ?>
+
+</td>
+
+<td>
+
+<a href="attendance.php?event_id=<?php echo $approvedRow['id']; ?>">
+
+<button class="btn btn-approve">
+
+<i class="fas fa-user-check"></i>
+
+Attendance
+
+</button>
+
+</a>
+
 </td>
 
 </tr>

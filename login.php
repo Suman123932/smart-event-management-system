@@ -28,7 +28,7 @@ if ($result->num_rows == 1) {
         $_SESSION['role'] = strtolower($row['role']);
         $_SESSION['user_id'] = $row['user_id'];
         $_SESSION['email'] = $row['email'];
-        $_SESSION['department'] = $row['department'];
+        $_SESSION['department'] = $row['departmentGroup'];
 
         // Decide dashboard
         $redirect = "";
@@ -55,7 +55,7 @@ if ($result->num_rows == 1) {
     }
 } else {
     echo "<script>
-            alert('Wrong email or password!');
+            alert('Email id not exist so please Register first');
             window.location='login.html';
           </script>";
 }

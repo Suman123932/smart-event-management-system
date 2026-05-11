@@ -29,9 +29,23 @@ $department = $_SESSION['department'];
 /* FETCH EVENTS CREATED BY THIS DEPT ADMIN */
 
 $eventQuery = "
-SELECT * FROM events
+
+SELECT events.*,
+
+(
+SELECT COUNT(*)
+FROM event_registrations
+WHERE event_registrations.event_id = events.id
+)
+
+AS registered_students
+
+FROM events
+
 WHERE created_by='$user_id'
+
 ORDER BY created_at DESC
+
 ";
 
 $eventResult = mysqli_query($conn, $eventQuery);
@@ -414,6 +428,13 @@ cursor:pointer;
 <li class="nav-item" onclick="showSection('create-event',event)">
 <i class="fas fa-plus-circle"></i> Create Event
 </li>
+<!--<li class="nav-item" onclick="showSection('manage-students',event)">
+
+<i class="fas fa-user-graduate"></i>
+
+Manage Students
+
+</li> -->
 
 <li class="nav-item" onclick="showSection('my-events',event)">
 <i class="fas fa-calendar-alt"></i> My Events
@@ -595,6 +616,7 @@ My Events
 <th>Organizer Status</th>
 <th>Super Admin Status</th>
 <th>Final Status</th>
+<th>Registred Student</th>
 </tr>
 
 </thead>
@@ -660,6 +682,11 @@ else{
 echo "<span class='status pending'>Pending</span>";
 }
 ?>
+
+</td>
+<td>
+
+<?php echo $row['registered_students']; ?>
 
 </td>
 
@@ -732,10 +759,126 @@ My Profile
 </div>
 
 </div>
+<!-- MANAGE STUDENTS 
+
+<div id="manage-students" class="section">
+
+<h1 style="color:white;margin-bottom:30px;">
+
+Manage Students
+
+</h1>
+
+<div class="table-container">
+
+<div style="margin-bottom:20px;">
+
+<a href="add_student.php">
+
+<button class="btn btn-approve">
+
+<i class="fas fa-plus"></i>
+
+Add Student
+
+</button>
+
+</a>
+
+</div>
+
+<table class="events-table">
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+<th>Roll No</th>
+<th>Email</th>
+<th>Department</th>
+<th>Action</th>
+
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<?php
+
+$studentQuery = "
+SELECT *
+FROM students
+WHERE department='$department'
+";
+
+$studentResult = mysqli_query($conn,$studentQuery);
+
+while($student=mysqli_fetch_assoc($studentResult)){
+
+?>
+
+<tr>
+
+<td>
+<?php echo $student['student_name']; ?>
+</td>
+
+<td>
+<?php echo $student['roll_no']; ?>
+</td>
+
+<td>
+<?php echo $student['email']; ?>
+</td>
+
+<td>
+<?php echo $student['department']; ?>
+</td>
+
+<td>
+
+<a href="delete_student.php?id=<?php echo $student['id']; ?>"
+onclick="return confirm('Are you sure to delete this student?')">
+
+<button
+style="
+background:#e74c3c;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
+">
+
+<i class="fas fa-trash"></i> Delete
+
+</button>
+
+</a>
+
+</td>
+
+</tr>
+
+<?php
+}
+?>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+-->
 
 <script>
 
-function showSection(id,event){
+function showSection(id,event=null){
 
 document.querySelectorAll('.section').forEach(section=>{
 section.classList.remove('active');
@@ -747,10 +890,40 @@ document.querySelectorAll('.nav-item').forEach(item=>{
 item.classList.remove('active');
 });
 
+if(event){
 event.currentTarget.classList.add('active');
+}
+
+localStorage.setItem('activeSection', id);
 
 }
 
+window.onload = function(){
+
+let activeSection = localStorage.getItem('activeSection');
+
+if(activeSection){
+
+showSection(activeSection);
+
+let navItems = document.querySelectorAll('.nav-item');
+
+navItems.forEach(item=>{
+
+item.classList.remove('active');
+
+if(
+item.getAttribute('onclick') &&
+item.getAttribute('onclick').includes(activeSection)
+){
+item.classList.add('active');
+}
+
+});
+
+}
+
+}
 function toggleSidebar(){
 document.getElementById('sidebar').classList.toggle('active');
 }

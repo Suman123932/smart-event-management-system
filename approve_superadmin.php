@@ -127,6 +127,11 @@ try {
     Final Status:
     <b style='color:green;'>Approved</b>
     </p>
+    Students can now register using the link below:
+
+    http://localhost/event/student_register.php
+
+    Thank You.
     ";
 
     $mail->send();

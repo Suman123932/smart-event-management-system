@@ -612,6 +612,7 @@ Approved Events
 <th>Venue</th>
 <th>Date</th>
 <th>Status</th>
+<th>Feedback</th>
 </tr>
 
 </thead>
@@ -639,6 +640,21 @@ while($approvedRow = mysqli_fetch_assoc($approvedEventsResult)){
 Approved
 </span>
 </td>
+<td>
+
+<a href="send_feedback.php?event_id=<?php echo $approvedRow['id']; ?>">
+
+<button class="btn btn-approve">
+
+<i class="fas fa-paper-plane"></i>
+
+Send Feedback
+
+</button>
+
+</a>
+
+</td>
 
 </tr>
 
@@ -656,6 +672,8 @@ Approved
 
 <!-- ANALYTICS -->
 
+<!-- ANALYTICS -->
+
 <div id="analytics" class="section">
 
 <h1 style="color:white;margin-bottom:30px;">
@@ -665,6 +683,105 @@ Analytics
 <div class="table-container">
 
 <canvas id="chart"></canvas>
+
+</div>
+
+<?php
+
+/* TOTAL FEEDBACK */
+
+$totalFeedbackQuery = "
+SELECT COUNT(*) AS total_feedback
+FROM feedback
+";
+
+$totalFeedbackResult = mysqli_query($conn,$totalFeedbackQuery);
+
+$totalFeedbackData = mysqli_fetch_assoc($totalFeedbackResult);
+
+$totalFeedback = $totalFeedbackData['total_feedback'];
+
+/* AVERAGE RATING */
+
+$avgRatingQuery = "
+SELECT AVG(rating) AS average_rating
+FROM feedback
+";
+
+$avgRatingResult = mysqli_query($conn,$avgRatingQuery);
+
+$avgRatingData = mysqli_fetch_assoc($avgRatingResult);
+
+$averageRating = round($avgRatingData['average_rating'],1);
+
+/* FEEDBACK COUNTS */
+
+$excellentQuery = "
+SELECT COUNT(*) AS excellent
+FROM feedback
+WHERE rating=5
+";
+
+$excellentResult = mysqli_query($conn,$excellentQuery);
+
+$excellentData = mysqli_fetch_assoc($excellentResult);
+
+$excellentCount = $excellentData['excellent'];
+
+$goodQuery = "
+SELECT COUNT(*) AS good
+FROM feedback
+WHERE rating=4
+OR rating=3
+";
+
+$goodResult = mysqli_query($conn,$goodQuery);
+
+$goodData = mysqli_fetch_assoc($goodResult);
+
+$goodCount = $goodData['good'];
+
+$poorQuery = "
+SELECT COUNT(*) AS poor
+FROM feedback
+WHERE rating<=2
+";
+
+$poorResult = mysqli_query($conn,$poorQuery);
+
+$poorData = mysqli_fetch_assoc($poorResult);
+
+$poorCount = $poorData['poor'];
+
+?>
+
+<div class="dashboard-grid" style="margin-top:30px;">
+
+<div class="card">
+
+<h3>Total Feedback</h3>
+
+<div class="card-number">
+<?php echo $totalFeedback; ?>
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Average Rating</h3>
+
+<div class="card-number">
+<?php echo $averageRating; ?>
+</div>
+
+</div>
+
+</div>
+
+<div class="table-container" style="margin-top:30px;">
+
+<canvas id="feedbackChart"></canvas>
 
 </div>
 
@@ -750,6 +867,43 @@ data:[
 <?php echo $rejectedCount; ?>
 ]
 }]
+},
+
+options:{
+responsive:true
+}
+
+});
+const feedbackCtx = document.getElementById('feedbackChart');
+
+new Chart(feedbackCtx,{
+
+type:'bar',
+
+data:{
+
+labels:[
+'Excellent',
+'Good',
+'Poor'
+],
+
+datasets:[{
+
+label:'Feedback Analysis',
+
+data:[
+
+<?php echo $excellentCount; ?>,
+
+<?php echo $goodCount; ?>,
+
+<?php echo $poorCount; ?>
+
+]
+
+}]
+
 },
 
 options:{
